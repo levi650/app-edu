@@ -8,20 +8,25 @@ from django.conf import settings
 
 class ImportJob(models.Model):
     """Track CSV import jobs."""
-    
+    # Status constants
+    PENDING = 'pending'
+    RUNNING = 'running'
+    DONE = 'done'
+    FAILED = 'failed'
+
     STATUS_CHOICES = [
-        ('pending', _('Pending')),
-        ('processing', _('Processing')),
-        ('completed', _('Completed')),
-        ('failed', _('Failed')),
+        (PENDING, _('Pending')),
+        (RUNNING, _('Running')),
+        (DONE, _('Done')),
+        (FAILED, _('Failed')),
     ]
-    
+
     name = models.CharField(_('import name'), max_length=255)
     status = models.CharField(
         _('status'),
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending'
+        default=PENDING,
     )
     file = models.FileField(_('CSV file'), upload_to='imports/')
     total_rows = models.PositiveIntegerField(_('total rows'), default=0)

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Sequence - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>{{ object.name }}</h1>
+  <p>{{ object.description }}</p>
+  <a class="btn btn-primary" href="{% url 'emails:sequence_step_create' object.pk %}">Add Step</a>
+  <ul class="list-group mt-3">
+    {% for step in object.steps.all %}
+      <li class="list-group-item">{{ step.offset_days }} days - {{ step.template.name }}</li>
+    {% empty %}
+      <li class="list-group-item">No steps</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

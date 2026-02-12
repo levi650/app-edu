@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Audit Logs - EDU-EXPAND{% endblock %}
+{% block content %}
+<h1>Audit Logs</h1>
+<ul class="list-group">
+  {% for log in logs %}
+    <li class="list-group-item">[{{ log.created_at }}] {{ log.user }} - {{ log.action }} - {{ log.object_repr }}</li>
+  {% empty %}
+    <li class="list-group-item">No logs</li>
+  {% endfor %}
+{% endblock %}

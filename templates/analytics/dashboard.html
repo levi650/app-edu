@@ -118,7 +118,7 @@ const chartConfig = {
 };
 
 // Load KPI data
-fetch('{% url "analytics:kpi_data" %}').then(r => r.json()).then(data => {
+fetch('{% url "analytics:api_kpis" %}').then(r => r.json()).then(data => {
     document.getElementById('kpi-total').textContent = data.total_prospects;
     document.getElementById('kpi-converted').textContent = data.converted;
     document.getElementById('kpi-demos').textContent = data.demos_scheduled;
@@ -126,7 +126,7 @@ fetch('{% url "analytics:kpi_data" %}').then(r => r.json()).then(data => {
 });
 
 // Load country chart
-fetch('{% url "analytics:country_breakdown" %}').then(r => r.json()).then(data => {
+fetch('{% url "analytics:api_country_breakdown" %}').then(r => r.json()).then(data => {
     new Chart(document.getElementById('countryChart'), {
         type: 'pie',
         data: {
@@ -141,7 +141,7 @@ fetch('{% url "analytics:country_breakdown" %}').then(r => r.json()).then(data =
 });
 
 // Load stage chart
-fetch('{% url "analytics:stage_breakdown" %}').then(r => r.json()).then(data => {
+fetch('{% url "analytics:api_stage_breakdown" %}').then(r => r.json()).then(data => {
     new Chart(document.getElementById('stageChart'), {
         type: 'bar',
         data: {
@@ -160,7 +160,7 @@ fetch('{% url "analytics:stage_breakdown" %}').then(r => r.json()).then(data => 
 });
 
 // Load score chart
-fetch('{% url "analytics:score_distribution" %}').then(r => r.json()).then(data => {
+fetch('{% url "analytics:api_score_distribution" %}').then(r => r.json()).then(data => {
     new Chart(document.getElementById('scoreChart'), {
         type: 'line',
         data: {

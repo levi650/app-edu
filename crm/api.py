@@ -56,3 +56,26 @@ class ProspectDetailAPI(View):
             raise Http404('Prospect not found or access denied')
 
         return JsonResponse(prospect_to_dict(prospect))
+
+
+class ProspectSummaryAPI(View):
+    """Return a small summary for a prospect useful for dashboard cards."""
+
+    def get(self, request, pk):
+        try:
+            prospect = ProspectService.get_prospect(request.user, pk)
+        except Prospect.DoesNotExist:
+            raise Http404('Prospect not found or access denied')
+
+        summary = {
+            'id': prospect.pk,
+            'name': prospect.name,
+            'score': prospect.score,
+            'priority': prospect.priority_level,
+            'stage': prospect.stage,
+            'last_interaction': prospect.last_interaction_at.isoformat() if prospect.last_interaction_at else None,
+            'days_without_interaction': prospect.days_without_interaction(),
+            'interactions_count': prospect.interactions.count(),
+            'email_logs_count': prospect.email_logs.count() if hasattr(prospect, 'email_logs') else 0,
+        }
+        return JsonResponse(summary)

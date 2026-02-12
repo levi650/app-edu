@@ -170,6 +170,7 @@ class Prospect(models.Model):
         default=0,
         help_text=_('0-100 scale')
     )
+    score_breakdown = models.JSONField(_('score breakdown'), default=dict, blank=True)
     priority_level = models.CharField(
         _('priority level'),
         max_length=10,
@@ -221,6 +222,12 @@ class Prospect(models.Model):
         """Recalculate prospect score based on rules."""
         from .scoring import calculate_score
         self.score, self.priority_level = calculate_score(self)
+        # store breakdown for UI and audit
+        try:
+            from .scoring import get_score_breakdown
+            self.score_breakdown = get_score_breakdown(self)
+        except Exception:
+            self.score_breakdown = {}
         self.score_last_calculated_at = timezone.now()
         self.save()
         return self.score, self.priority_level

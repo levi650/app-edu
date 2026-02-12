@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Client Communications - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Communications</h1>
+  <ul class="list-group">
+    {% for log in email_logs %}
+      <li class="list-group-item">
+        <strong>{{ log.subject }}</strong> &middot; <small class="text-muted">{{ log.created_at }}</small>
+      </li>
+    {% empty %}
+      <li class="list-group-item">No communications found.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

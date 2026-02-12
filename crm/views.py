@@ -4,7 +4,7 @@ CRM views for prospect management.
 import csv
 import io
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View, ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import View, ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.http import HttpResponseForbidden, JsonResponse
@@ -302,23 +302,24 @@ class ProspectImportView(CommercialRequiredMixin, View):
         if form.is_valid():
             csv_file = request.FILES['csv_file']
             owner = form.cleaned_data['owner']
-            
-            # Create import job
+            # Create import job and save uploaded file for preview/processing
             import_job = ImportJob.objects.create(
                 name=csv_file.name,
                 file=csv_file,
                 owner=owner,
-                status='pending'
+                status=ImportJob.PENDING
             )
-            # Delegate the CSV processing to the service layer
+
+            # Immediately process import synchronously for simple demo when user submits from import page
+            # If user came from preview flow, they will POST to ImportProcessView to start processing instead.
             result = ProspectService.import_from_file(request.user, csv_file, owner=owner)
 
-            # Update import job with results (keep previous fields for compatibility)
+            # Update import job with results
             import_job.total_rows = result.get('imported', 0) + result.get('failed', 0)
             import_job.imported_rows = result.get('imported', 0)
             import_job.failed_rows = result.get('failed', 0)
             import_job.errors = {'errors': result.get('errors', [])[:100]}
-            import_job.status = 'completed' if result.get('failed', 0) == 0 else 'completed'
+            import_job.status = ImportJob.DONE if result.get('failed', 0) == 0 else ImportJob.DONE
             import_job.save()
 
             messages.success(request, f"Imported {result.get('imported',0)} prospects")
@@ -337,7 +338,15 @@ class ImportPreviewView(CommercialRequiredMixin, View):
         form = ProspectImportForm(request.POST, request.FILES)
         if form.is_valid():
             csv_file = request.FILES['csv_file']
-            
+            # Save uploaded file as an ImportJob so user can preview and then start processing
+            owner = form.cleaned_data['owner']
+            import_job = ImportJob.objects.create(
+                name=csv_file.name,
+                file=csv_file,
+                owner=owner,
+                status=ImportJob.PENDING
+            )
+
             preview_rows = []
             try:
                 csv_file.seek(0)
@@ -351,7 +360,8 @@ class ImportPreviewView(CommercialRequiredMixin, View):
             
             return render(request, 'crm/import_preview.html', {
                 'preview_rows': preview_rows,
-                'csv_file': csv_file.name
+                'csv_file': csv_file.name,
+                'import_job': import_job
             })
         
         messages.error(request, 'Invalid form')
@@ -364,15 +374,42 @@ class ImportProcessView(CommercialRequiredMixin, View):
     def post(self, request):
         import_job_id = request.POST.get('import_job_id')
         import_job = get_object_or_404(ImportJob, pk=import_job_id)
-        
-        if import_job.owner != request.user and not request.user.is_admin():
+        # Delegate status retrieval to enrichment service for consistency
+        from enrichment.services import get_import_job_status
+        # If 'start' flag is provided, process the saved ImportJob file now
+        if request.POST.get('start'):
+            # Only owner or admin may start
+            try:
+                is_admin = request.user.is_admin()
+            except Exception:
+                is_admin = getattr(request.user, 'is_superuser', False)
+            if import_job.owner != request.user and not is_admin:
+                return JsonResponse({'error': 'Not authorized'}, status=403)
+
+            # Process the file stored on ImportJob
+            try:
+                # import_job.file is a FieldFile; use its file-like object
+                file_obj = import_job.file.open('rb')
+                result = ProspectService.import_from_file(request.user, file_obj, owner=import_job.owner)
+                import_job.total_rows = result.get('imported', 0) + result.get('failed', 0)
+                import_job.imported_rows = result.get('imported', 0)
+                import_job.failed_rows = result.get('failed', 0)
+                import_job.errors = {'errors': result.get('errors', [])[:100]}
+                import_job.status = ImportJob.DONE if result.get('failed', 0) == 0 else ImportJob.DONE
+                import_job.save()
+            except Exception as e:
+                import_job.status = ImportJob.FAILED
+                import_job.errors = {'errors': [str(e)]}
+                import_job.save()
+
+        status = get_import_job_status(request.user, import_job_id)
+        if status is None:
             return JsonResponse({'error': 'Not authorized'}, status=403)
-        
         return JsonResponse({
-            'status': import_job.status,
-            'imported': import_job.imported_rows,
-            'failed': import_job.failed_rows,
-            'total': import_job.total_rows
+            'status': status.get('status'),
+            'imported': status.get('imported_rows'),
+            'failed': status.get('failed_rows'),
+            'total': status.get('total_rows')
         })
 
 
@@ -436,3 +473,33 @@ class ClientUpdateView(CommercialRequiredMixin, UpdateView):
         client = self.get_object()
         return (self.request.user.is_admin() or 
                 client.account_manager == self.request.user)
+
+
+class PipelineView(CommercialRequiredMixin, TemplateView):
+    """Prospect pipeline kanban board."""
+
+    template_name = 'crm/pipeline.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Retrieve prospects grouped by stage
+        stages = [
+            Prospect.NEW,
+            Prospect.CONTACTED,
+            Prospect.ENGAGED,
+            Prospect.INTERESTED,
+            Prospect.DEMO_SCHEDULED,
+            Prospect.DEMO_DONE,
+            Prospect.CONVERTED,
+            Prospect.LOST,
+        ]
+
+        board = []
+        for stage in stages:
+            qs = Prospect.objects.filter(stage=stage)
+            if not self.request.user.is_admin():
+                qs = qs.filter(owner=self.request.user)
+            board.append({'stage': stage, 'label': dict(Prospect.STAGE_CHOICES).get(stage, stage), 'items': qs.order_by('-score')[:50]})
+
+        context['board'] = board
+        return context

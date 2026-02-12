@@ -90,6 +90,19 @@ class User(AbstractUser):
     
     def is_client_user(self):
         return self.role == self.CLIENT
+    
+    # Template-friendly properties
+    @property
+    def is_admin_property(self):
+        return self.is_admin()
+    
+    @property
+    def is_commercial_property(self):
+        return self.is_commercial()
+    
+    @property
+    def is_client_user_property(self):
+        return self.is_client_user()
 
 
 class AuditLog(models.Model):

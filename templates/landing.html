@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_simple.html" %}
 {% block title %}Welcome to EDU-EXPAND ORI{% endblock %}
 {% block extra_css %}
 <style>
@@ -25,8 +25,8 @@
 <div class="hero">
     <h1 class="display-4 fw-bold">EDU-EXPAND ORI</h1>
     <p class="lead">A modern SaaS platform for education, CRM, and analytics.</p>
-    <a href="/accounts/register/" class="btn btn-light btn-lg cta-btn">Get Started</a>
-    <a href="/accounts/client-portal/login/" class="btn btn-outline-light btn-lg cta-btn ms-2">Sign In</a>
+    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg cta-btn">Get Started</a>
+    <a href="{% url 'accounts:client_login' %}" class="btn btn-outline-light btn-lg cta-btn ms-2">Sign In</a>
 </div>
 <div class="container features">
     <div class="row text-center">

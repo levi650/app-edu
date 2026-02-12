@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Sequences - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Sequences</h1>
+  <a class="btn btn-primary" href="{% url 'emails:sequence_create' %}">Create Sequence</a>
+</div>
+<table class="table">
+  <thead><tr><th>Name</th><th>Steps</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for s in object_list %}
+      <tr>
+        <td><a href="{% url 'emails:sequence_detail' s.pk %}">{{ s.name }}</a></td>
+        <td>{{ s.steps.count }}</td>
+        <td><a href="{% url 'emails:sequence_edit' s.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="3">No sequences</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

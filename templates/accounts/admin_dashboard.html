@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="list-group">
+      <a href="{% url 'crm:prospect_list' %}" class="list-group-item list-group-item-action">Prospects</a>
+      <a href="{% url 'emails:template_list' %}" class="list-group-item list-group-item-action">Emails</a>
+      <a href="{% url 'accounts:user_list' %}" class="list-group-item list-group-item-action">Users</a>
+      <a href="{% url 'enrichment:import_job_list' %}" class="list-group-item list-group-item-action">Import Jobs</a>
+      <a href="{% url 'analytics:dashboard' %}" class="list-group-item list-group-item-action">Analytics</a>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <h1>Admin Dashboard</h1>
+    <p class="lead">Quick overview</p>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Users</h5>
+            <p class="card-text">{{ total_users }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Prospects</h5>
+            <p class="card-text">{{ total_prospects }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Clients</h5>
+            <p class="card-text">{{ total_clients }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

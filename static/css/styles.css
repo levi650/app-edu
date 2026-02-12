@@ -234,6 +234,53 @@ body {
     }
 }
 
+/* Sidebar & main content layout tweaks */
+.sidebar {
+    min-height: 100vh;
+    padding-top: 1rem;
+    border-right: 1px solid #e9ecef;
+}
+
+main.col-md-9.ms-sm-auto.col-lg-10.px-md-4 {
+    padding-top: 1rem;
+}
+
+/* Ensure content does not hide behind fixed navbar */
+body > .container-fluid {
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        position: sticky;
+        top: 70px; /* below navbar */
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    .content-with-sidebar {
+        margin-left: 0; /* layout handled by grid */
+    }
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        display: none; /* hide sidebar on small screens for simplicity */
+    }
+}
+
+/* Pipeline card drag styles */
+.pipeline-card {
+    cursor: grab;
+}
+.pipeline-card.dragging {
+    opacity: 0.6;
+    transform: scale(0.98);
+}
+.pipeline-column.over {
+    background: rgba(0,0,0,0.03);
+    border: 2px dashed rgba(0,0,0,0.08);
+}
+
 /* Utilities */
 .text-truncate {
     overflow: hidden;

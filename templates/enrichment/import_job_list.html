@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Import Jobs - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Import Jobs</h1>
+  <a class="btn btn-primary" href="{% url 'enrichment:prospect_import' %}">New Import</a>
+</div>
+<table class="table">
+  <thead><tr><th>ID</th><th>File</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for job in object_list %}
+      <tr>
+        <td>{{ job.pk }}</td>
+        <td>{{ job.filename }}</td>
+        <td>{{ job.get_status_display }}</td>
+        <td>{{ job.created_at }}</td>
+        <td><a href="{% url 'enrichment:import_job_detail' job.pk %}">View</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">No import jobs</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

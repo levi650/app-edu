@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Import Job - EDU-EXPAND{% endblock %}
+{% block content %}
+<h1>Import Job {{ object.pk }}</h1>
+<p>File: {{ object.filename }}</p>
+<p>Status: {{ object.get_status_display }}</p>
+<p>Started: {{ object.started_at }}</p>
+<p>Finished: {{ object.finished_at }}</p>
+<div>
+  <a class="btn btn-secondary" href="{% url 'enrichment:import_job_list' %}">Back</a>
+</div>
+{% endblock %}

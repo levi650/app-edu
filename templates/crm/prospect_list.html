@@ -6,11 +6,16 @@
 {% block content %}
 <div class="row mt-4">
     <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Prospects</h1>
-            <a href="{% url 'crm:prospect_create' %}" class="btn btn-primary">
-                <i class="bi bi-plus"></i> New Prospect
-            </a>
+            <div class="btn-group">
+              <a href="{% url 'crm:prospect_create' %}" class="btn btn-primary">
+                  <i class="bi bi-plus"></i> New Prospect
+              </a>
+              <a href="{% url 'crm:prospect_import' %}" class="btn btn-outline-secondary">
+                  <i class="bi bi-upload"></i> Import CSV
+              </a>
+            </div>
         </div>
 
         <!-- Search and Filters -->

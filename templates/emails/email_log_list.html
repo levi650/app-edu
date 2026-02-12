@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Email Logs - EDU-EXPAND{% endblock %}
+{% block content %}
+<h1>Email Logs</h1>
+<ul class="list-group">
+  {% for log in object_list %}
+    <li class="list-group-item"><a href="{% url 'emails:email_log_detail' log.pk %}">{{ log.subject }}</a> <small class="text-muted">{{ log.created_at }}</small></li>
+  {% empty %}
+    <li class="list-group-item">No logs</li>
+  {% endfor %}
+</ul>
+{% endblock %}

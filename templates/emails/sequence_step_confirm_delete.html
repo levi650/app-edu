@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Delete Step - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Confirm Delete Step</h1>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger">Delete</button>
+    <a class="btn btn-secondary" href="{% url 'emails:sequence_detail' object.sequence.pk %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

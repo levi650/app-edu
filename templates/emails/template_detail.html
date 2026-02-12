@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Email Template Detail - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>{{ object.name }}</h1>
+  <p><strong>Subject:</strong> {{ object.subject }}</p>
+  <div class="border p-3">{{ object.body|linebreaks }}</div>
+  <a class="btn btn-secondary mt-2" href="{% url 'emails:template_edit' object.pk %}">Edit</a>
+  <a class="btn btn-danger mt-2" href="{% url 'emails:template_delete' object.pk %}">Delete</a>
+</div>
+{% endblock %}

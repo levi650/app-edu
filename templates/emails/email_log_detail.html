@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Email Log - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>{{ object.subject }}</h1>
+  <p>To: {{ object.to_email }}</p>
+  <p><small class="text-muted">{{ object.created_at }}</small></p>
+  <div class="border p-3">{{ object.body|linebreaks }}</div>
+</div>
+{% endblock %}

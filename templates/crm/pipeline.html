@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Pipeline - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container-fluid my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Prospect Pipeline</h1>
+    <a class="btn btn-outline-secondary" href="{% url 'crm:prospect_list' %}">Back to List</a>
+  </div>
+
+  <div class="row">
+    {% for column in board %}
+      <div class="col-md-3 mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            <strong>{{ column.label }}</strong> <span class="badge bg-secondary float-end">{{ column.items.count }}</span>
+          </div>
+            <div class="card-body pipeline-column" data-stage="{{ column.stage }}" style="min-height: 200px; max-height: 600px; overflow:auto;">
+              {% for p in column.items %}
+                <div class="card mb-2 pipeline-card" draggable="true" data-id="{{ p.pk }}">
+                  <div class="card-body py-2">
+                    <a href="{% url 'crm:prospect_detail' p.pk %}"><strong>{{ p.name }}</strong></a>
+                    <div class="small text-muted">{{ p.email }} · Score: <span class="badge bg-primary">{{ p.score }}</span></div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="text-muted">No prospects</div>
+              {% endfor %}
+            </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+  {% block extra_js %}
+  <script>
+  // CSRF helper
+  function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  const csrftoken = getCookie('csrftoken');
+
+  document.querySelectorAll('.pipeline-card').forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+          card.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', card.dataset.id);
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+  });
+
+  document.querySelectorAll('.pipeline-column').forEach(col => {
+      col.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          col.classList.add('over');
+      });
+      col.addEventListener('dragleave', () => col.classList.remove('over'));
+      col.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          col.classList.remove('over');
+          const id = e.dataTransfer.getData('text/plain');
+          const stage = col.dataset.stage;
+          const card = document.querySelector(`.pipeline-card[data-id='${id}']`);
+          const oldParent = card.parentElement;
+          // Optimistic UI
+          col.appendChild(card);
+
+          try {
+              const resp = await fetch('{% url "crm:api_update_stage" 0 %}'.replace('/0/', `/${id}/`), {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': csrftoken,
+                  },
+                  body: JSON.stringify({stage: stage})
+              });
+              const data = await resp.json();
+              if (!resp.ok) throw new Error(data.error || 'Server error');
+              // Success — optionally show label
+          } catch (err) {
+              // Revert UI
+              oldParent.appendChild(card);
+              alert('Failed to move prospect: ' + err.message);
+          }
+      });
+  });
+  </script>
+  {% endblock %}

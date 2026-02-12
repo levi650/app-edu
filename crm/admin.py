@@ -25,7 +25,7 @@ class ProspectAdmin(admin.ModelAdmin):
             'fields': ('owner', 'stage', 'source', 'notes')
         }),
         ('Scoring', {
-            'fields': ('score', 'priority_level', 'score_last_calculated_at'),
+            'fields': ('score', 'priority_level', 'score_last_calculated_at', 'score_breakdown'),
             'classes': ('collapse',)
         }),
         ('Interaction Tracking', {

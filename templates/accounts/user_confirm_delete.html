@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Delete User - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Confirm Delete</h1>
+  <p>Are you sure you want to delete {{ object.email }}?</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a class="btn btn-secondary" href="{% url 'accounts:user_list' %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

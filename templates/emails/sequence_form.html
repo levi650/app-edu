@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Sequence Form - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>{% if object %}Edit Sequence{% else %}Create Sequence{% endif %}</h1>
+  <form method="post">{% csrf_token %}
+    {{ form|crispy }}
+    <button class="btn btn-primary mt-2">Save</button>
+  </form>
+</div>
+{% endblock %}

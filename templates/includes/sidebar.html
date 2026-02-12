@@ -1,0 +1,16 @@
+<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+  <div class="position-sticky pt-3">
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link" href="{% url 'accounts:admin_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'crm:prospect_list' %}"><i class="bi bi-people"></i> Prospects</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'crm:pipeline' %}"><i class="bi bi-kanban"></i> Pipeline</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'enrichment:prospect_import' %}"><i class="bi bi-cloud-upload"></i> Import</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'enrichment:import_job_list' %}"><i class="bi bi-list-check"></i> Import Jobs</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'emails:template_list' %}"><i class="bi bi-envelope"></i> Email Templates</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'emails:sequence_list' %}"><i class="bi bi-list-ol"></i> Sequences</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'analytics:dashboard' %}"><i class="bi bi-bar-chart"></i> Analytics</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'accounts:user_list' %}"><i class="bi bi-people-fill"></i> Users</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'accounts:admin_logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+    </ul>
+  </div>
+</nav>

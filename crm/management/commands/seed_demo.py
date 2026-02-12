@@ -179,6 +179,26 @@ class Command(BaseCommand):
             if created:
                 AuditLog.objects.create(user=admin, action='demo_seed', content_type='User', object_id=user.pk, object_repr=str(user))
 
+        # Ensure a known client user exists for demo login convenience
+        client_demo_email = 'client@example.com'
+        client_demo_password = 'clientpass'
+        client_user, created = User.objects.get_or_create(email=client_demo_email, defaults={'username': client_demo_email, 'role': User.CLIENT})
+        if created or not client_user.has_usable_password():
+            client_user.set_password(client_demo_password)
+            # Associate with a demo client that does not yet have a user (avoid OneToOne conflicts)
+            assigned_client = None
+            for c in demo_clients:
+                if not User.objects.filter(client=c).exists():
+                    assigned_client = c
+                    break
+            if assigned_client:
+                client_user.client = assigned_client
+            client_user.save()
+        if created:
+            AuditLog.objects.create(user=admin, action='demo_seed', content_type='User', object_id=client_user.pk, object_repr=str(client_user))
+
+        self.stdout.write(self.style.NOTICE(f'Client login: {client_demo_email} / {client_demo_password}'))
+
         self.stdout.write(self.style.SUCCESS('Demo data seeding complete.'))
         self.stdout.write(self.style.NOTICE('Admin login: admin@example.com / adminpass'))
 

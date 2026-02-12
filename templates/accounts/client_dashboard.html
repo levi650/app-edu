@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Client Dashboard - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Client Dashboard</h1>
+  <p>Welcome, {{ user.first_name }}.</p>
+  {% if client %}
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ client.name }}</h5>
+        <p class="card-text">{{ client.description }}</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

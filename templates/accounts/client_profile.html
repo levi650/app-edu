@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Client Profile - EDU-EXPAND{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Profile</h1>
+  {% if client %}
+    <dl class="row">
+      <dt class="col-sm-3">Name</dt><dd class="col-sm-9">{{ client.name }}</dd>
+      <dt class="col-sm-3">Website</dt><dd class="col-sm-9">{{ client.website }}</dd>
+      <dt class="col-sm-3">Contact</dt><dd class="col-sm-9">{{ client.contact_name }} / {{ client.contact_email }}</dd>
+    </dl>
+  {% else %}
+    <p>No client profile available.</p>
+  {% endif %}
+</div>
+{% endblock %}
