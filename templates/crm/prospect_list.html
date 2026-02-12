@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prospects - EDU-EXPAND CRM{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Prospects</h1>
+            <a href="{% url 'crm:prospect_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus"></i> New Prospect
+            </a>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" placeholder="Search by name, email, phone..." value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="stage" class="form-select" multiple>
+                            <option value="">All Stages</option>
+                            {% for value, label in search_form.stage.field.choices %}
+                                <option value="{{ value }}" {% if value in request.GET.getlist.stage %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="priority" class="form-select" multiple>
+                            <option value="">All Priorities</option>
+                            <option value="high" {% if 'high' in request.GET.getlist.priority %}selected{% endif %}>High</option>
+                            <option value="medium" {% if 'medium' in request.GET.getlist.priority %}selected{% endif %}>Medium</option>
+                            <option value="low" {% if 'low' in request.GET.getlist.priority %}selected{% endif %}>Low</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="country" class="form-select" multiple>
+                            <option value="">All Countries</option>
+                            <option value="NG" {% if 'NG' in request.GET.getlist.country %}selected{% endif %}>Nigeria</option>
+                            <option value="EG" {% if 'EG' in request.GET.getlist.country %}selected{% endif %}>Egypt</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Prospects Table -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>School/Organization</th>
+                            <th>Country</th>
+                            <th>Contact</th>
+                            <th>Stage</th>
+                            <th>Score</th>
+                            <th>Priority</th>
+                            <th>Owner</th>
+                            <th>Last Interaction</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prospect in prospects %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'crm:prospect_detail' prospect.pk %}">{{ prospect.name }}</a>
+                            </td>
+                            <td>{{ prospect.get_country_display }}</td>
+                            <td>
+                                <small>
+                                    {{ prospect.contact_name }}<br>
+                                    <code>{{ prospect.email }}</code>
+                                </small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ prospect.get_stage_display }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ prospect.score }}/100</strong>
+                            </td>
+                            <td>
+                                {% if prospect.priority_level == 'high' %}
+                                    <span class="badge bg-danger">High</span>
+                                {% elif prospect.priority_level == 'medium' %}
+                                    <span class="badge bg-warning">Medium</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Low</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ prospect.owner.first_name }}</td>
+                            <td>
+                                {% if prospect.last_interaction_at %}
+                                    <small>{{ prospect.last_interaction_at|date:"M d, H:i" }}</small>
+                                {% else %}
+                                    <small class="text-muted">Never</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'crm:prospect_detail' prospect.pk %}" class="btn btn-outline-primary">View</a>
+                                    <a href="{% url 'crm:prospect_edit' prospect.pk %}" class="btn btn-outline-secondary">Edit</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4">
+                                <p class="text-muted">No prospects found. <a href="{% url 'crm:prospect_create' %}">Create one now</a></p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Log Interaction - {{ prospect.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat"></i> Log Interaction for {{ prospect.name }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% include 'includes/form_field.html' with field=form.interaction_type %}
+                            </div>
+                            <div class="col-md-6">
+                                {% include 'includes/form_field.html' with field=form.outcome %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                {% include 'includes/form_field.html' with field=form.summary %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% include 'includes/form_field.html' with field=form.interaction_date %}
+                            </div>
+                            <div class="col-md-6">
+                                {% include 'includes/form_field.html' with field=form.next_action_date %}
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle"></i> Save Interaction
+                                </button>
+                                <a href="{% url 'crm:prospect_detail' prospect.pk %}" class="btn btn-secondary btn-lg ms-2">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Prospect Summary -->
+            <div class="alert alert-info mt-4">
+                <h6 class="mb-2">Prospect Summary</h6>
+                <p class="mb-1"><strong>Email:</strong> {{ prospect.email }}</p>
+                <p class="mb-1"><strong>Contact:</strong> {{ prospect.contact_name }} ({{ prospect.contact_role }})</p>
+                <p class="mb-0"><strong>Current Stage:</strong> {{ prospect.get_stage_display }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

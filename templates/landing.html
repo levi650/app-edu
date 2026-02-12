@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Welcome to EDU-EXPAND ORI{% endblock %}
+{% block extra_css %}
+<style>
+.hero {
+    background: linear-gradient(90deg, #4f8cff 0%, #38d9a9 100%);
+    color: #fff;
+    padding: 80px 0 40px 0;
+    text-align: center;
+}
+.features {
+    margin-top: 40px;
+}
+.feature-icon {
+    font-size: 2.5rem;
+    color: #4f8cff;
+}
+.cta-btn {
+    margin-top: 30px;
+    font-size: 1.2rem;
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1 class="display-4 fw-bold">EDU-EXPAND ORI</h1>
+    <p class="lead">A modern SaaS platform for education, CRM, and analytics.</p>
+    <a href="/accounts/register/" class="btn btn-light btn-lg cta-btn">Get Started</a>
+    <a href="/accounts/client-portal/login/" class="btn btn-outline-light btn-lg cta-btn ms-2">Sign In</a>
+</div>
+<div class="container features">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="feature-icon mb-3"><i class="bi bi-bar-chart"></i></div>
+            <h5>Analytics Dashboard</h5>
+            <p>Track progress, KPIs, and engagement with beautiful charts.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-icon mb-3"><i class="bi bi-people"></i></div>
+            <h5>CRM & Enrollment</h5>
+            <p>Manage prospects, clients, and course enrollments seamlessly.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-icon mb-3"><i class="bi bi-person-circle"></i></div>
+            <h5>Personalized Learning</h5>
+            <p>Empower learners with personalized dashboards and progress tracking.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

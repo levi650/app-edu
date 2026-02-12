@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - EDU-EXPAND CRM{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+    <h1 class="mb-4">Analytics Dashboard</h1>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase text-light">Total Prospects</h6>
+                    <h2 id="kpi-total" class="mb-0">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase text-light">Converted</h6>
+                    <h2 id="kpi-converted" class="mb-0">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase text-light">Demos Scheduled</h6>
+                    <h2 id="kpi-demos" class="mb-0">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase">Response Rate</h6>
+                    <h2 id="kpi-response" class="mb-0">-</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-2">
+                <div class="col-md-3">
+                    <input type="date" name="date_from"  class="form-control" value="{{ date_from }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="country" class="form-select">
+                        <option value="">All Countries</option>
+                        <option value="NG" {% if country == 'NG' %}selected{% endif %}>Nigeria</option>
+                        <option value="EG" {% if country == 'EG' %}selected{% endif %}>Egypt</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Prospects by Country</h5>
+                </div>
+                <div class="card-body" style="height: 300px;">
+                    <canvas id="countryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Prospects by Stage</h5>
+                </div>
+                <div class="card-body" style="height: 300px;">
+                    <canvas id="stageChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Score Distribution</h5>
+                </div>
+                <div class="card-body" style="height: 300px;">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const chartConfig = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            labels: {
+                font: { size: 11 }
+            }
+        }
+    }
+};
+
+// Load KPI data
+fetch('{% url "analytics:kpi_data" %}').then(r => r.json()).then(data => {
+    document.getElementById('kpi-total').textContent = data.total_prospects;
+    document.getElementById('kpi-converted').textContent = data.converted;
+    document.getElementById('kpi-demos').textContent = data.demos_scheduled;
+    document.getElementById('kpi-response').textContent = data.response_rate + '%';
+});
+
+// Load country chart
+fetch('{% url "analytics:country_breakdown" %}').then(r => r.json()).then(data => {
+    new Chart(document.getElementById('countryChart'), {
+        type: 'pie',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.data,
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+            }]
+        },
+        options: chartConfig
+    });
+});
+
+// Load stage chart
+fetch('{% url "analytics:stage_breakdown" %}').then(r => r.json()).then(data => {
+    new Chart(document.getElementById('stageChart'), {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Prospects',
+                data: data.data,
+                backgroundColor: '#36A2EB'
+            }]
+        },
+        options: {
+            ...chartConfig,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+});
+
+// Load score chart
+fetch('{% url "analytics:score_distribution" %}').then(r => r.json()).then(data => {
+    new Chart(document.getElementById('scoreChart'), {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Prospects',
+                data: data.data,
+                borderColor: '#FF6384',
+                backgroundColor: 'rgba(255,99,132,0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            ...chartConfig,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+});
+</script>
+{% endblock %}

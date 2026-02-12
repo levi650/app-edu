@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Client Portal - Dashboard{% endblock %}
+
+{% block sidebar %}
+<div class="d-none d-md-block bg-white border-end position-fixed vh-100" style="width:220px;left:0;top:56px;z-index:1000;">
+    <div class="list-group list-group-flush py-3">
+        <a href="#" class="list-group-item list-group-item-action active"><i class="bi bi-house"></i> Dashboard</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-journal-text"></i> My Courses</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-bar-chart"></i> Progress</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-person"></i> Profile</a>
+        <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-gear"></i> Settings</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4" style="margin-left:0;margin-right:0;">
+    <div class="row">
+        <div class="col-md-2 d-none d-md-block"></div>
+        <div class="col-12 col-md-10">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h2 class="mb-0">
+                        <i class="bi bi-person-circle"></i> Dashboard
+                    </h2>
+                    <p class="text-muted">Welcome, {{ request.user.get_full_name|default:request.user.email }}!</p>
+                </div>
+            </div>
+            <!-- Overview Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-2">Your Status</h6>
+                            <h3 class="text-primary">{{ request.user.get_role_display }}</h3>
+                            <small class="text-muted">Account Type</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-2">Account Created</h6>
+                            <h3 class="text-info">{{ request.user.date_joined|date:"M d, Y" }}</h3>
+                            <small class="text-muted">Join Date</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-2">Last Active</h6>
+                            <h3 class="text-success">{{ request.user.last_login|date:"M d, H:i"|default:"Never" }}</h3>
+                            <small class="text-muted">Sign In</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-2">Status</h6>
+                            <h3 class="text-success">Active</h3>
+                            <small class="text-muted">Account Status</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                    <h5 class="mb-0">Account Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'accounts:client_profile' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person"></i> View Profile
+                    </a>
+                    <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-key"></i> Change Password
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Information -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Email:</strong><br>
+                        {{ request.user.email }}
+                    </p>
+                    <p>
+                        <strong>Full Name:</strong><br>
+                        {{ request.user.get_full_name|default:"Not provided" }}
+                    </p>
+                    <p>
+                        <strong>Organization:</strong><br>
+                        {% if request.user.client %}
+                            {{ request.user.client.name }}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </p>
+                    <p>
+                        <strong>Phone:</strong><br>
+                        {{ request.user.phone|default:"Not provided" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Support & Links</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        <a href="{% url 'accounts:contact_support' %}" class="btn btn-sm btn-outline-info w-100">
+                            <i class="bi bi-envelope"></i> Contact Support
+                        </a>
+                    </p>
+                    <p class="mb-3">
+                        <a href="{% url 'accounts:view_documentation' %}" class="btn btn-sm btn-outline-info w-100">
+                            <i class="bi bi-book"></i> View Documentation
+                        </a>
+                    </p>
+                    <p class="mb-0">
+                        <a href="{% url 'accounts:faq' %}" class="btn btn-sm btn-outline-info w-100">
+                            <i class="bi bi-question-circle"></i> FAQ
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
