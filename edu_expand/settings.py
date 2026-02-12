@@ -5,6 +5,8 @@ Django settings for EDU-EXPAND CRM project.
 import os
 from pathlib import Path
 from decouple import config, Csv
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent

@@ -86,3 +86,4 @@ Thumbs.db
 # Node (if using frontend build)
 node_modules/
 npm-debug.log
+.env
